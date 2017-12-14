@@ -6,8 +6,8 @@
 
 import os,sys,traceback,json
 
-sys.path.append('resizeImage')
-import resizeImage
+sys.path.append('Classes')
+from ResizeImageBuilder import ResizeImageBuilder
 
 # {
 #   "images" : [
@@ -44,7 +44,7 @@ def loadJson(path):
     # os.path.join(path, 'Assets.xcassets/AppIcon.appiconset/Contents.json')
     jsonFile = open(path,'r')
     jsonString = jsonFile.read()
-    print 'jsonString', jsonString
+    # print 'jsonString', jsonString
     jsonFile.close()
 
     jsonData = json.loads(jsonString)
@@ -55,40 +55,45 @@ def saveJson(path, jsonData):
     print 'saveJson:', path
     jsonString = json.dumps(jsonData, indent=2, separators=(',', ' : ')) #sort_keys=True, 
     jsonFile = open(path,'w')
-    print 'jsonString', jsonString
+    # print 'jsonString', jsonString
     jsonFile.write(jsonString)
     jsonFile.close()
 
-#jsonFilePath: Contents.json 路径
-#baseImagePath: 原始Icon 路径
-def autoSetImage(jsonFilePath, baseImagePath):
+#jsonFilePath: Contents.json path
+#originImagePath: base icon path
+def autoSetImage(jsonFilePath, originImagePath):
     jsonData = loadJson(jsonFilePath)
 
-    baseImageBaseName = os.path.basename(baseImagePath)#原文件名
-    imageType = os.path.splitext(baseImageBaseName)[1]#原文件后缀
+    builder = ResizeImageBuilder()
+    builder.setOriginImagePath(originImagePath)
+    #origin icon file name
+    baseImageBaseName = os.path.basename(originImagePath)
+    #suffix
+    imageType = os.path.splitext(baseImageBaseName)[1]
 
     for imageConfig in jsonData['images']:
         sizeStr = imageConfig['size'].split('x', 1)[0]
-        print 'sizeStr' + sizeStr
         size = float(sizeStr)
         scaleStr = imageConfig['scale'].split('x', 1)[0]
         scale = int(scaleStr)
 
-
-        imageName = 'Icon-' + sizeStr
+        #target file name
+        imageName = imageConfig['idiom'] + '-' + sizeStr
         if scale != 1:
             imageName += 'x' + scaleStr
-        imageName += imageType#各个分辨率的图片文件名
+        imageName += imageType
+        #target file full path
         savePath = os.path.join(os.path.dirname(jsonFilePath), imageName)
 
         print('createImage: ' + savePath)
-        errMsg = resizeImage.createImage(baseImagePath, savePath, int(size*scale))
+        errMsg = builder.createImage(savePath, int(size*scale))
         if errMsg != None:
             print errMsg
+            return
         else:
             imageConfig['filename'] = imageName
-
-        saveJson(jsonFilePath, jsonData)
+    #save Contents.json
+    saveJson(jsonFilePath, jsonData)
 
 def main():
     for i in range(0, len(sys.argv)):
