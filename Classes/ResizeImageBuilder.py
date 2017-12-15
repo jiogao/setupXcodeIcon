@@ -28,7 +28,7 @@ class ResizeImageBuilder:
         try:
             newimg = self.createImageWithOriginImage(self.baseImage, imageSize)
             self.saveImageWithPath(newimg, savePath)
-            print 'done'
+            # print 'done'
         except (BaseException),e:
             return 'createImage error: ' + traceback.format_exc(e)
 

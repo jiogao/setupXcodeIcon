@@ -1,10 +1,12 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#exp: python setupXcodeIcon.py testRes/Contents.json testRes/Icon.jpg
-#auto set up Xcode icon file: Assets.xcassets/AppIcon.appiconset/Contents.json
-#auto create images
+#usage: ./setupXcodeIcon.py [-o originIconPath] [-t targetContentsPath]
 
-import os,sys,traceback,json
+#auto set up the Xcode icon file: Assets.xcassets/AppIcon.appiconset/Contents.json
+#auto create images of corresponding resolution
+
+import os,sys,traceback,json,getopt
 
 sys.path.append('Classes')
 from ResizeImageBuilder import ResizeImageBuilder
@@ -37,7 +39,19 @@ from ResizeImageBuilder import ResizeImageBuilder
 #     "author" : "xcode"
 #   }
 # }
+def usage():
+    print\
+    '#\n'\
+    'usage: ./setupXcodeIcon.py [-o originIconPath] [-t targetContentsPath]\n'\
+    '#'
 
+def help():
+    print\
+    '#\n'\
+    '  -h --help        display this help and exit\n'\
+    '  -o --origin      origin icon path\n'\
+    '  -t --target      file path of Assets.xcassets/AppIcon.appiconset/Contents.json\n'\
+    '#'
 
 def loadJson(path):
     print 'loadJson:', path
@@ -59,9 +73,9 @@ def saveJson(path, jsonData):
     jsonFile.write(jsonString)
     jsonFile.close()
 
+#originImagePath: origin icon path
 #jsonFilePath: Contents.json path
-#originImagePath: base icon path
-def autoSetImage(jsonFilePath, originImagePath):
+def autoSetImage(originImagePath, jsonFilePath):
     jsonData = loadJson(jsonFilePath)
 
     builder = ResizeImageBuilder()
@@ -71,6 +85,7 @@ def autoSetImage(jsonFilePath, originImagePath):
     #suffix
     imageType = os.path.splitext(baseImageBaseName)[1]
 
+    print('createImage:')
     for imageConfig in jsonData['images']:
         sizeStr = imageConfig['size'].split('x', 1)[0]
         size = float(sizeStr)
@@ -85,26 +100,48 @@ def autoSetImage(jsonFilePath, originImagePath):
         #target file full path
         savePath = os.path.join(os.path.dirname(jsonFilePath), imageName)
 
-        print('createImage: ' + savePath)
+        # print(imageName),
+        sys.stdout.write(imageName + ' ')
         errMsg = builder.createImage(savePath, int(size*scale))
         if errMsg != None:
             print errMsg
             return
         else:
             imageConfig['filename'] = imageName
+    print '\ndone'
     #save Contents.json
     saveJson(jsonFilePath, jsonData)
 
 def main():
-    for i in range(0, len(sys.argv)):
-        print "argv[", i, "]", sys.argv[i]
+    try:
+        options,args = getopt.getopt(sys.argv[1:],"ho:t:",["help","origin=","target="])
+    except (getopt.GetoptError), e:
+        # print 'sys.argv error' + traceback.format_exc(e)
+        usage()
+        sys.exit()
 
+    origin = None
+    target = None
+    for name,value in options:
+        if name in ("-h","--help"):
+            help()
+            sys.exit()
+        
+        if name in ("-o","--origin"):
+            print 'origin is----',value
+            origin = value
+        if name in ("-t","--target"):
+            print 'target is----',value
+            target = value
 
-    if len(sys.argv) > 2:
-        autoSetImage(sys.argv[1], sys.argv[2])
-    else:
-        # print 'Contents.json Icon.jpg'
-        autoSetImage('testRes/Contents.json', 'testRes/Icon.jpg')
+    # for i in range(0, len(args)):
+    #     print "args[", i, "]", args[i]
+
+    if origin == None or target == None:
+        usage()
+        sys.exit()
+
+    autoSetImage(origin, target)
 
 if __name__ == '__main__':
     main()
