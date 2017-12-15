@@ -1,15 +1,25 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
- 
+
 import sys,os,traceback
 from PIL import Image
 
 class ResizeImageBuilder:
     def __init__(self):
-        print(self.__class__)
+        # print(self.__class__)
+        pass
 
     def setOriginImagePath(self, filePath):
         try:
-            self.baseImage = Image.open(filePath)
+            img = Image.open(filePath)
+            # img = img.convert('RGB')
+            # size = 32, 32
+            # img.thumbnail(size)
+            print 'origin image mode:', img.mode
+            img = img.convert('RGB')
+            print 'target image mode:', img.mode
+            # img.show()
+            self.baseImage = img
             return None
         except (BaseException),e:
             return str(filePath + " open error: " + traceback.format_exc(e))

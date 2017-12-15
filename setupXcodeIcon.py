@@ -6,11 +6,7 @@
 #auto set up the Xcode icon file: Assets.xcassets/AppIcon.appiconset/Contents.json
 #auto create images of corresponding resolution
 
-import os,sys,traceback,json,getopt
-
-sys.path.append('Classes')
-from ResizeImageBuilder import ResizeImageBuilder
-
+#Contents.json:
 # {
 #   "images" : [
 #     {
@@ -39,6 +35,12 @@ from ResizeImageBuilder import ResizeImageBuilder
 #     "author" : "xcode"
 #   }
 # }
+
+import os,sys,traceback,json,getopt
+
+sys.path.append(os.path.join(sys.path[0], 'Classes'))
+from ResizeImageBuilder import ResizeImageBuilder
+
 def usage():
     print\
     '#\n'\
@@ -54,7 +56,7 @@ def help():
     '#'
 
 def loadJson(path):
-    print 'loadJson:', path
+    # print 'loadJson:', path
     # os.path.join(path, 'Assets.xcassets/AppIcon.appiconset/Contents.json')
     jsonFile = open(path,'r')
     jsonString = jsonFile.read()
@@ -66,7 +68,7 @@ def loadJson(path):
     return jsonData
 
 def saveJson(path, jsonData):
-    print 'saveJson:', path
+    # print 'saveJson:', path
     jsonString = json.dumps(jsonData, indent=2, separators=(',', ' : ')) #sort_keys=True, 
     jsonFile = open(path,'w')
     # print 'jsonString', jsonString
@@ -108,9 +110,9 @@ def autoSetImage(originImagePath, jsonFilePath):
             return
         else:
             imageConfig['filename'] = imageName
-    print '\ndone'
     #save Contents.json
     saveJson(jsonFilePath, jsonData)
+    print '\ndone'
 
 def main():
     try:

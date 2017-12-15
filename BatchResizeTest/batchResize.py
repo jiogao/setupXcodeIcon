@@ -1,12 +1,13 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
- 
+
 import sys, os, traceback
 
-sys.path.append('../Classes')
+sys.path.append(os.path.join(sys.path[0], '../Classes'))
 from ResizeImageBuilder import ResizeImageBuilder
 
-rootDir = sys.path[0] + os.sep
-targetDir = sys.path[0] + os.sep + 'output' + os.sep
+rootDir = sys.path[0]
+targetDir = os.path.join(sys.path[0], 'output')
 fileName = 'Icon.jpg'
 
 def batchResize(sizeList):
@@ -17,7 +18,7 @@ def batchResize(sizeList):
     except (BaseException),e:
         print 'errFile open fail: ' + traceback.format_exc(e)
 
-    filePath = rootDir + fileName
+    filePath = os.path.join(rootDir, fileName)
     print 'origin file', filePath
     
     builder = ResizeImageBuilder()
@@ -26,7 +27,7 @@ def batchResize(sizeList):
 
         targetFileBasename = os.path.basename(filePath)
         targetFileNames = os.path.splitext(targetFileBasename)
-        savePath = targetDir + targetFileNames[0] + '-' + str(x) + targetFileNames[1]
+        savePath = os.path.join(targetDir, targetFileNames[0] + '-' + str(x) + targetFileNames[1])
 
         print('createImage: ' + savePath)
         errMsg = builder.createImage(savePath, x)
