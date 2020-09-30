@@ -15,13 +15,13 @@ class ResizeImageBuilder:
             # img = img.convert('RGB')
             # size = 32, 32
             # img.thumbnail(size)
-            print 'origin image mode:', img.mode
+            print('origin image mode:', img.mode)
             img = img.convert('RGB')
-            print 'target image mode:', img.mode
+            print('target image mode:', img.mode)
             # img.show()
             self.baseImage = img
             return None
-        except (BaseException),e:
+        except (BaseException,e):
             return str(filePath + " open error: " + traceback.format_exc(e))
 
     def createImageWithOriginImage(self, img, imageSize):
@@ -32,14 +32,14 @@ class ResizeImageBuilder:
 
     def createImage(self, savePath, imageSize):
         if self.baseImage == None:
-            print 'error: self.baseImage == None, please call setOriginImagePath() before createImage()'
+            print('error: self.baseImage == None, please call setOriginImagePath() before createImage()')
             return
 
         try:
             newimg = self.createImageWithOriginImage(self.baseImage, imageSize)
             self.saveImageWithPath(newimg, savePath)
-            # print 'done'
-        except (BaseException),e:
+            # print('done')
+        except (BaseException,e):
             return 'createImage error: ' + traceback.format_exc(e)
 
 def main():

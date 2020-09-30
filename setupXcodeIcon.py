@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #usage: ./setupXcodeIcon.py [-o originIconPath] [-t targetContentsPath]
@@ -42,36 +42,36 @@ sys.path.append(os.path.join(sys.path[0], 'Classes'))
 from ResizeImageBuilder import ResizeImageBuilder
 
 def usage():
-    print\
+    print(\
     '#\n'\
     'usage: ./setupXcodeIcon.py [-o originIconPath] [-t targetContentsPath]\n'\
-    '#'
+    '#')
 
 def help():
-    print\
+    print(\
     '#\n'\
     '  -h --help        display this help and exit\n'\
     '  -o --origin      origin icon path\n'\
     '  -t --target      file path of Assets.xcassets/AppIcon.appiconset/Contents.json\n'\
-    '#'
+    '#')
 
 def loadJson(path):
-    # print 'loadJson:', path
+    # print('loadJson:', path)
     # os.path.join(path, 'Assets.xcassets/AppIcon.appiconset/Contents.json')
     jsonFile = open(path,'r')
     jsonString = jsonFile.read()
-    # print 'jsonString', jsonString
+    # print('jsonString', jsonString)
     jsonFile.close()
 
     jsonData = json.loads(jsonString)
-    # print 'jsonData', jsonData
+    # print('jsonData', jsonData)
     return jsonData
 
 def saveJson(path, jsonData):
     # print 'saveJson:', path
     jsonString = json.dumps(jsonData, indent=2, separators=(',', ' : ')) #sort_keys=True, 
     jsonFile = open(path,'w')
-    # print 'jsonString', jsonString
+    # print('jsonString', jsonString)
     jsonFile.write(jsonString)
     jsonFile.close()
 
@@ -106,19 +106,19 @@ def autoSetImage(originImagePath, jsonFilePath):
         sys.stdout.write(imageName + ' ')
         errMsg = builder.createImage(savePath, int(size*scale))
         if errMsg != None:
-            print errMsg
+            print(errMsg)
             return
         else:
             imageConfig['filename'] = imageName
     #save Contents.json
     saveJson(jsonFilePath, jsonData)
-    print '\ndone'
+    print('\ndone')
 
 def main():
     try:
         options,args = getopt.getopt(sys.argv[1:],"ho:t:",["help","origin=","target="])
-    except (getopt.GetoptError), e:
-        # print 'sys.argv error' + traceback.format_exc(e)
+    except (getopt.GetoptError, e):
+        # print('sys.argv error' + traceback.format_exc(e))
         usage()
         sys.exit()
 
@@ -130,14 +130,14 @@ def main():
             sys.exit()
         
         if name in ("-o","--origin"):
-            print 'origin is----',value
+            print('origin is----',value)
             origin = value
         if name in ("-t","--target"):
-            print 'target is----',value
+            print('target is----',value)
             target = value
 
     # for i in range(0, len(args)):
-    #     print "args[", i, "]", args[i]
+    #     print("args[", i, "]", args[i])
 
     if origin == None or target == None:
         usage()
